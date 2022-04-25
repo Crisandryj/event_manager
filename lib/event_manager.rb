@@ -1,6 +1,15 @@
 puts 'Event Manager Initialized!'
 
-p File.exist? "event_attendees.csv"
+fn = 'event_attendees.csv'
 
-contents = File.read('event_attendees.csv')
-puts contents
+# p File.exist? "event_attendees.csv"
+
+contents = File.read(fn)
+# puts contents
+
+lines = File.readlines(fn)
+
+lines.each do |line|
+    columns = line.split(",")
+    p columns
+end
