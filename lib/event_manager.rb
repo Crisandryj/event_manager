@@ -1,33 +1,47 @@
-puts 'Event Manager Initialized!'
 require 'csv'
-fn = 'event_attendees.csv'
+require 'google/apis/civicinfo_v2'
 
-# p File.exist? "event_attendees.csv"
-
-# contents = File.read(fn)
-# puts contents
-
-# lines = File.readlines(fn)
-
-# row_index = 0
-# lines.each_with_index do |line,index|
-#     next if index == 0
-#     columns = line.split(",")
-#     p line
-#     p columns
-# end
 
 def clean_zipcode(zipcode)
-	zipcode.to_s.rjust(5, '0')[0..4]
+  zipcode.to_s.rjust(5, '0')[0..4]
+end
+
+def legislators_by_zipcode(zip)
+	civic_info = Google::Apis::CivicinfoV2::CivicInfoService.new
+	civic_info.key = 'AIzaSyClRzDqDh5MsXwnCWi0kOiiBivP6JsSyBw'				
+
+begin
+
+legislators = civic_info.representative_info_by_address(
+	address: zip,
+	levels: 'country',
+	roles: ['legislatorUpperBody', 'legislatorLowerBody']
+)
+legislators = legislators.officials
+legislator_names = legislators.map{|legislator| legislator.name}
+legislator_names.join(", ")
+
+rescue
+'You can find your representatives by visiting www.commoncause.org/take-action/find-elected-officials'
+end
 end 
 
-contents = CSV.open(fn, headers: true, header_converters: :symbol)
+puts 'EventManager initialized.'
+
+contents = CSV.open(
+  'event_attendees.csv',
+  headers: true,
+  header_converters: :symbol
+)
 
 contents.each do |row|
-    name = row[:first_name]
+  name = row[:first_name]
+  zipcode = clean_zipcode(row[:zipcode])
 
-    zipcode = clean_zipcode(row[:zipcode])
+	legislators =	legislators_by_zipcode(zipcode)
 
-    p "#{name} #{zipcode}"
-end 
+  puts "#{name} #{zipcode} #{legislators}"
+end
 
+
+template_name = File.read('form_letter.html')
