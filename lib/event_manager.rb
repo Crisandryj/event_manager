@@ -10,6 +10,7 @@ contents = File.read(fn)
 lines = File.readlines(fn)
 
 lines.each do |line|
+    next if line == " ,RegDate,first_Name,last_Name,Email_Address,HomePhone,Street,City,State,Zipcode\n"
     columns = line.split(",")
-    p columns
+    p columns[2]
 end
