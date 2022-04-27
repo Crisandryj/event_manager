@@ -52,9 +52,11 @@ end
 
 
 
-  def frequency
-
-
+  def frequency(array)
+    array.reduce(Hash.new(0)) do |hash,value|
+      hash[value] += 1
+      hash
+    end 
   end 
 
 
@@ -62,13 +64,13 @@ contents = CSV.open('event_attendees.csv', headers: true, header_converters: :sy
 
 template_letter = File.read('form_letter.erb')
 erb_template = ERB.new template_letter
-
+week_day = []
+hour = []
 contents.each do |row|
 	name = row[:first_name]
 	zipcode = clean_zipcode(row [:zipcode])
 	id = row[0]
   regdate= row[:regdate]
- 
   phone_num = row[:homephone].gsub(/[^0-9]/, '')  
 
   phone_num_list = clean_phone_number(phone_num)
@@ -79,19 +81,15 @@ contents.each do |row|
 
   hour_of_day = reg_date_to_print.hour
   weekday = reg_date_to_print.wday
-  week_day = []
-  hour_of_day = []
-
-  week_day << weekday
-
-  p hour_of_day
-  p week_day
+  week_day.push(weekday)
+  hour.push(hour_of_day)
 
 	legislators = legislators_by_zip(zipcode)
 
 	form_letter = erb_template.result(binding)
 
   create_form(id,form_letter)
-
-
 end 
+
+p frequency(week_day).sort_by {|k,v| v}
+p frequency(hour).sort_by {|k,v| v}
