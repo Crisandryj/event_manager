@@ -1,6 +1,7 @@
 require 'csv'
 require 'google/apis/civicinfo_v2'
 require 'erb'
+require 'time'
 
 	
 
@@ -60,12 +61,19 @@ contents.each do |row|
 	name = row[:first_name]
 	zipcode = clean_zipcode(row [:zipcode])
 	id = row[0]
+  regtime = row[:regdate]
+  begin
+  p Time.parse(regtime).strftime("%k:%M") 
+  p "Wedenesday" if Time.parse(regtime).wday  == 4
+  rescue
+    "visit website"
+  end 
 
-  phone_num = row[:homephone].gsub(/[^0-9]/, '')
+  phone_num = row[:homephone].gsub(/[^0-9]/, '')  
 
   phone_num_list = clean_phone_number(phone_num)
 
-  p phone_num_list
+  phone_num_list
 
 	legislators = legislators_by_zip(zipcode)
 
