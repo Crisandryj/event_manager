@@ -52,6 +52,12 @@ end
 
 
 
+  def frequency
+
+
+  end 
+
+
 contents = CSV.open('event_attendees.csv', headers: true, header_converters: :symbol)
 
 template_letter = File.read('form_letter.erb')
@@ -61,19 +67,25 @@ contents.each do |row|
 	name = row[:first_name]
 	zipcode = clean_zipcode(row [:zipcode])
 	id = row[0]
-  regtime = row[:regdate]
-  begin
-  p Time.parse(regtime).strftime("%k:%M") 
-  p "Wedenesday" if Time.parse(regtime).wday  == 4
-  rescue
-    "visit website"
-  end 
-
+  regdate= row[:regdate]
+ 
   phone_num = row[:homephone].gsub(/[^0-9]/, '')  
 
   phone_num_list = clean_phone_number(phone_num)
 
   phone_num_list
+
+  reg_date_to_print = DateTime.strptime(regdate,"%m/%d/%y %H:%M")
+
+  hour_of_day = reg_date_to_print.hour
+  weekday = reg_date_to_print.wday
+  week_day = []
+  hour_of_day = []
+
+  week_day << weekday
+
+  p hour_of_day
+  p week_day
 
 	legislators = legislators_by_zip(zipcode)
 
